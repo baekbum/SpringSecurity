@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="com.service.ComService">
+    <!-- 메뉴 정보 출력 -->
+    <resultMap type="com.vo.MenuInfoVo" id="MenuInfoMap"></resultMap>
+    
+    <select id="getMenuInfo" parameterType="java.util.Map" statementType="CALLABLE">
+        {CALL GetMenuInfo(#{menu_seq, mode=IN},
+                          #{key, jdbcType=CURSOR, mode=OUT, javaType=java.sql.ResultSet,resultMap=MenuInfoMap})}
+    </select>
+
+</mapper>
+
+
+

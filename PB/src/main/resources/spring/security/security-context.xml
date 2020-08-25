@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/security https://www.springframework.org/schema/security/spring-security.xsd">
+
+    <security:http auto-config="true" use-expressions="true">
+        <security:intercept-url pattern="/favicon.ico" access="hasRole('ROLE_ANONYMOUS')" />
+        <security:intercept-url pattern="/resources/**" access="permitAll" />
+        <security:intercept-url pattern="/login/**"  access="permitAll" />
+        <security:intercept-url pattern="/**" access="hasAnyRole('ROLE_ADMIN','ROLE_USER')" />
+        <!-- <security:intercept-url pattern="/**" access="hasRole('ROLE_ANONYMOUS')" /> -->
+        
+        <security:form-login login-page="/login/loginProcess.pb"
+                    login-processing-url="/login/login.pb"
+                    authentication-failure-url="/login/loginProcess.pb?err=true"
+                    
+                    default-target-url="/login/loginSuccess.pb"
+                    always-use-default-target="true"
+                    username-parameter="userid"
+                    password-parameter="userpw"
+        />
+        
+        <security:session-management>
+            <security:concurrency-control max-sessions="1" expired-url="/" />
+        </security:session-management>
+        
+        <security:access-denied-handler error-page="/login/accessDenied.pb"/>
+    </security:http>
+    
+    <security:authentication-manager>
+        <security:authentication-provider>
+            <!-- 
+            <security:user-service>
+                <security:user name="admin" password="1234" authorities="ROLE_USER, ROLE_ADMIN" />
+                <security:user name="guest" password="1234" authorities="ROLE_USER" />
+            </security:user-service>
+             -->
+            <security:jdbc-user-service data-source-ref="dataSource"
+                users-by-username-query="SELECT user_id AS username
+                                              , user_pw AS password
+                                              , CASE enable_yn
+                                                     WHEN 'Y' THEN 1
+                                                     ELSE 0
+                                                 END AS enabled
+                                           FROM T_USER_INFO
+                                          WHERE user_id=?"
+                authorities-by-username-query="SELECT user_id AS username
+                                                    , CASE user_auth
+                                                           WHEN '99' THEN 'ROLE_ADMIN'
+                                                           ELSE 'ROLE_USER'
+                                                       END AS authority
+                                                 FROM T_USER_INFO
+                                                WHERE user_id=?"
+            
+            /> 
+        </security:authentication-provider>
+    </security:authentication-manager>
+</beans>
