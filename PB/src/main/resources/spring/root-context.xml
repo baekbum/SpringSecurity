@@ -16,7 +16,7 @@
             <!-- 오라클 사용자 이름 -->
             <property value="system" name="username" />
             <!-- 오라클 사용자 비밀번호 -->
-            <property value="#skdlf12" name="password" />
+            <property value="" name="password" />
     </bean>  
     
     <!-- SqlSessionFactory 객체 설정 -->
